@@ -17,7 +17,7 @@ function Login({ onLogin }) {
     event.preventDefault();
     setError("");
     try {
-      const { data } = await api.post("/staff/admin/login/", form);
+      const { data } = await api.post("/admin/login/", form);
       localStorage.setItem("admin_access_token", data.access);
       localStorage.setItem("admin_refresh_token", data.refresh);
       onLogin(data.user);
@@ -70,8 +70,8 @@ function EmployeeForm({ employee, onClose, onSaved }) {
     setError("");
     try {
       const path = employee
-        ? `/staff/admin/employees/${employee.id}/`
-        : "/staff/admin/employees/";
+        ? `/admin/employees/${employee.id}/`
+        : "/admin/employees/";
       const { data } = employee
         ? await api.patch(path, form)
         : await api.post(path, form);
@@ -151,7 +151,7 @@ function AdminCreate({ onClose, onSaved }) {
   async function submit(event) {
     event.preventDefault();
     try {
-      const { data } = await api.post("/staff/admin/users/", form);
+      const { data } = await api.post("/admin/users/", form);
       onSaved(data);
     } catch (error) {
       setError(
@@ -217,10 +217,7 @@ function App() {
   const [message, setMessage] = useState("");
   useEffect(() => {
     if (user)
-      Promise.all([
-        api.get("/staff/admin/employees/"),
-        api.get("/staff/admin/users/"),
-      ])
+      Promise.all([api.get("/admin/employees/"), api.get("/admin/users/")])
         .then(([employeesResponse, adminsResponse]) => {
           setEmployees(employeesResponse.data);
           setAdmins(adminsResponse.data);
@@ -237,12 +234,12 @@ function App() {
   }
   async function removeEmployee(employee) {
     if (!confirm(`Delete ${employee.full_name}?`)) return;
-    await api.delete(`/staff/admin/employees/${employee.id}/`);
+    await api.delete(`/admin/employees/${employee.id}/`);
     setEmployees((items) => items.filter((item) => item.id !== employee.id));
   }
   async function removeAdmin(admin) {
     if (!confirm(`Delete administrator ${admin.username}?`)) return;
-    await api.delete(`/staff/admin/users/${admin.id}/`);
+    await api.delete(`/admin/users/${admin.id}/`);
     setAdmins((items) => items.filter((item) => item.id !== admin.id));
   }
   if (!user) return <Login onLogin={login} />;
