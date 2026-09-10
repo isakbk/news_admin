@@ -7,6 +7,7 @@ const emptyEmployee = {
   email: "",
   phone: "",
   designation: "News Editor",
+  is_active_employee: true,
 };
 const emptyAdmin = { username: "", email: "", password: "" };
 
@@ -131,6 +132,16 @@ function EmployeeForm({ employee, onClose, onSaved }) {
             />
           </label>
         </div>
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={form.is_active_employee ?? true}
+            onChange={(e) =>
+              setForm({ ...form, is_active_employee: e.target.checked })
+            }
+          />
+          Active employee account
+        </label>
         {!employee && (
           <p className="hint">
             Username is generated automatically. The first password is the same
@@ -301,6 +312,7 @@ function App() {
               <thead>
                 <tr>
                   <th>Employee</th>
+                  <th>Employee ID</th>
                   <th>Username</th>
                   <th>Designation</th>
                   <th>Phone</th>
@@ -314,6 +326,9 @@ function App() {
                     <td>
                       <strong>{employee.full_name}</strong>
                       <small>{employee.email || "No email"}</small>
+                    </td>
+                    <td>
+                      <code>{employee.employee_id}</code>
                     </td>
                     <td>
                       <code>{employee.username}</code>
