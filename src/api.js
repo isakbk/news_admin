@@ -2,7 +2,20 @@ import axios from "axios";
 
 const productionApiUrl = "https://newsportalbackend.pythonanywhere.com/api";
 const developmentApiUrl = "http://127.0.0.1:8000/api";
-const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? developmentApiUrl : productionApiUrl);
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+
+// The admin API is rooted at /api. Remove an accidental staff-app suffix
+// from an old deployment variable so login never becomes /api/staff/admin/.
+let baseURL = configuredApiUrl || (import.meta.env.DEV ? developmentApiUrl : productionApiUrl);
+try {
+  const configuredUrl = new URL(baseURL, window.location.origin);
+  if (configuredUrl.pathname.replace(/\/$/, "").endsWith("/staff")) {
+    configuredUrl.pathname = configuredUrl.pathname.replace(/\/staff\/?$/, "");
+    baseURL = configuredUrl.toString().replace(/\/$/, "");
+  }
+} catch {
+  baseURL = import.meta.env.DEV ? developmentApiUrl : productionApiUrl;
+}
 
 const api = axios.create({ baseURL, timeout: 15000 });
 
